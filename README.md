@@ -5,7 +5,7 @@ This script allows you to fire [Bitrise](app.bitrise.io) builds directly from [F
 ## 🔧 Setup
 ### ⚠️ Prerequisites
 - Create an `API_TOKEN` on [Bitrise](app.bitrise.io/me/account/security) (better without expiration).
-- Find the `APP_SLUG` by navigating to the involved project and keeping the final identifier of the URL (i.e. https://app.bitrise.io/app/<APP_SLUG>)
+- Find the `APP_SLUG` by navigating to the involved project and keeping the final identifier of the URL (i.e. `https://app.bitrise.io/app/<APP_SLUG>`)
 - Find the personal `BUILD_TRIGGER_TOKEN` by simulating the _Start build_ action from Bitrise project page, choosing the _Advanced_ option, scrolling to the bottom to _Generated cURL command_ and grabbing the `build_trigger_token` parameter.
 
 Once you retrieved all these information, we can setup the script by setting respectively `API_TOKEN`, `BUILD_TRIGGER_TOKEN` and `APP_SLUG`.
