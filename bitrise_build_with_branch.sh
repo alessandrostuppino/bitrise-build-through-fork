@@ -68,7 +68,7 @@ read_selection=$(osascript -e '
   if selectedWorkflow is false then return "CANCELLED"
   
   set commitMessage to text returned of (display dialog "Message (optional)" default answer "")
-  return (item 1 of selectedWorkflow) & "||" & commitMessage
+  return (item 1 of selectedWorkflow) & "§" & commitMessage
 ')
 
 if [[ "$read_selection" == "CANCELLED" || -z "$read_selection" ]]; then
@@ -77,24 +77,33 @@ if [[ "$read_selection" == "CANCELLED" || -z "$read_selection" ]]; then
 fi
 
 # Clean selection
-SELECTED_WORKFLOW=$(echo "$read_selection" | cut -d'||' -f1)
-COMMIT_MESSAGE=$(echo "$read_selection" | cut -d'||' -f2)
+SELECTED_WORKFLOW="${read_selection%%§*}"
+COMMIT_MESSAGE="${read_selection#*§}"
+
+# Create the payload for the build endpoint
+json_payload=$(jq -n \
+  --arg branch "$BRANCH_NAME" \
+  --arg workflow "$SELECTED_WORKFLOW" \
+  --arg message "$COMMIT_MESSAGE" \
+  --arg token "$BUILD_TRIGGER_TOKEN" \
+  --arg author "$AUTHOR" \
+  '{
+    build_params: {
+      branch: $branch,
+      workflow_id: $workflow,
+      commit_message: $message
+    },
+    hook_info: {
+      build_trigger_token: $token,
+      type: "bitrise"
+    },
+    triggered_by: ("Fork - @" + $author)
+  }')
 
 # Trigger the build
 response=$(curl -s -X POST "https://app.bitrise.io/app/${APP_SLUG}/build/start.json" -L \
   -H "Content-Type: application/json" \
-  --data "{
-    \"build_params\": {
-      \"branch\": \"${BRANCH_NAME}\",
-      \"workflow_id\": \"${SELECTED_WORKFLOW}\",
-      \"commit_message\":\"${COMMIT_MESSAGE}\"
-    },
-    \"hook_info\": {
-      \"build_trigger_token\": \"${BUILD_TRIGGER_TOKEN}\",
-      \"type\": \"bitrise\"
-    },
-    \"triggered_by\": \"Fork - @${AUTHOR}\"
-  }")
+  --data "$json_payload")
 
 # Parse response and extract build_url
 build_url=$(echo "$response" | jq -r '.build_url')
