@@ -4,7 +4,7 @@
 API_TOKEN="<API_TOKEN" # Bitrise > Profile > Account Settings > Security > Create token (better with no expiration).
 BUILD_TRIGGER_TOKEN="<BUILD_TRIGGER_TOKEN>" # Bitrise > "Project" > Start build > Advanced > Generated cURL command (bottom) > "build_trigger_token".
 APP_SLUG="<APP_SLUG>" # Bitrise > "Project" > from the URL "https://app.bitrise.io/app/<APP_SLUG>".
-DEFAULT_WORKFLOW="monorepo-dev-fad-telepass" # Set the pre-selected workflow.
+DEFAULT_WORKFLOW="<DEFAULT_WORKFLOW>" # Set the pre-selected workflow.
 
 # Check for a passed-in branch name
 if [[ -n "$1" ]]; then
